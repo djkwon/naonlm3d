@@ -1,10 +1,12 @@
+Feb 2, 2021
+
 
 naonlm3d
   Adaptive Non-Local Means Denoising of MR Images with
   Spatially Varying Noise Levels
 
 Developed by Jose V. Manjon and Pierrick Coupe
-Modified by Dongjin Kwon
+Modified by Dongjin Kwon, Nicolas Honnorat
 
 Usage:
 
@@ -18,3 +20,6 @@ Options:
   -f (--patch  ) [integer]           : radius of the 3D patch used to compute similarity (default=1, option)
   -r (--rician ) [1 or 0]            : 1 (default) if apply rician noise estimation, 0 otherwise (option)
 
+
+The default number of threads (previously set to 8 threads) is now equal to 1. 
+As a result, naonlm3d will run in a single thread, unless users specify a larger number of threads using the -t option.
