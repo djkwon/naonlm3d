@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 // naonlm3d.cpp
 // Developed by Jose V. Manjon and Pierrick Coupe
-// Modified by Dongjin Kwon
+// Modified by Dongjin Kwon, Nicolas Honnorat
 ///////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -536,6 +536,7 @@ void usage()
 	printf("Options:\n\n");
 	printf("-i (--input  ) [input_image_file]  : input image file (input)\n");
 	printf("-o (--output ) [output_image_file] : output image file (output)\n");
+	printf("-t (--thread ) [integer]           : number of threads (default=1, option)\n");
 	printf("-v (--search ) [integer]           : radius of the 3D search area (default=3, option)\n");
 	printf("-f (--patch  ) [integer]           : radius of the 3D patch used to compute similarity (default=1, option)\n");
 	printf("-r (--rician ) [1 or 0]            : 1 (default) if apply rician noise estimation, 0 otherwise (option)\n");
@@ -554,6 +555,7 @@ int main(int argc, char* argv[])
     char output_image[1024] = {0,};
 	int param_w = 3;
 	int param_f = 1;
+	int Nthreads = 1;
 	bool rician = true;
 
 	// parse command line
@@ -589,7 +591,10 @@ int main(int argc, char* argv[])
 			}
 			if        (strcmp(argv[i], "-i" ) == 0 || strcmp(argv[i], "--input" ) == 0) { sprintf(input_image , "%s", argv[i+1]); i++;
 			} else if (strcmp(argv[i], "-o" ) == 0 || strcmp(argv[i], "--output") == 0) { sprintf(output_image, "%s", argv[i+1]); i++;
-			} else if (strcmp(argv[i], "-w" ) == 0 || strcmp(argv[i], "--search") == 0) {
+			} else if (strcmp(argv[i], "-t" ) == 0 || strcmp(argv[i], "--thread") == 0) {
+				Nthreads = atoi(argv[i+1]);
+				i++;
+			}else if (strcmp(argv[i], "-w" ) == 0 || strcmp(argv[i], "--search") == 0) {
 				param_w = atoi(argv[i+1]);
 				i++;
 			} else if (strcmp(argv[i], "-f" ) == 0 || strcmp(argv[i], "--patch" ) == 0) {
@@ -618,7 +623,7 @@ int main(int argc, char* argv[])
 	double *ima, *fima, *average, *bias;
 	double *means, *variances, *Estimate, *Label;
 	double SNR, mean, var, label, estimate;
-	int Ndims, i, j, k, ii, jj, kk, ni, nj, nk, ndim, indice, Nthreads, ini, fin, r;
+	int Ndims, i, j, k, ii, jj, kk, ni, nj, nk, ndim, indice, ini, fin, r;
 	int dims0, dims1, dims2, dimsx;
 	double max_val;
 
@@ -724,7 +729,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	Nthreads = 8;
 
 #if defined(WIN32) || defined(WIN64)
 	// Reserve room for handles of threads in ThreadList
